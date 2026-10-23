@@ -113,7 +113,22 @@
     </main>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('bella_douce_db')) || { produtos: [], vendas: [], carrinho: [] };
+        let db = JSON.parse(localStorage.getItem('bella_douce_db')) ||  {
+    produtos: [
+        { id: 1, nome: "Brigadeiro Gourmet Belga", categoria: "Doces Tradicionais", custo: 1.20, venda: 3.50, estoque: 40 },
+        { id: 2, nome: "Bolo no Pote Ninho c/ Nutella", categoria: "Bolos & Tortas", custo: 4.50, venda: 12.00, estoque: 15 },
+        { id: 3, nome: "Coxinha de Morango c/ Chocolate", categoria: "Doces Tradicionais", custo: 2.50, venda: 7.00, estoque: 20 },
+        { id: 4, nome: "Torta de Limão (Fatia)", categoria: "Bolos & Tortas", custo: 3.00, venda: 9.50, estoque: 10 }
+    ],
+    clientes: [
+        { id: 1, nome: "Ana Paula de Souza", telefone: "(11) 98888-1122", saldoFiado: 24.50 }
+    ],
+    vendas: [
+        { id: 101, data: "22/10/2026 10:15", cliente: "Ana Paula de Souza", total: 24.50, formaPgto: "Fiado", custoTotal: 8.40 }
+    ],
+    carrinho: []
+}
+
 
         function salvarDB() {
             localStorage.setItem('bella_douce_db', JSON.stringify(db));
