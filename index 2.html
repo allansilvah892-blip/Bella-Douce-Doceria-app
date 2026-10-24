@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bella Douce Doceria - Gestão & PDV</title>
+
+    <!-- Configurações PWA e Ícone Nativo iOS/Android -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bella Douce">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#080d1a'
+                        },
+                        baby: {
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0284c7'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f8ff;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #e0f2fe;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col h-screen overflow-hidden">
+
+    <!-- Header Principal com a Logo Oficial -->
+    <header class="bg-gradient-to-r from-slate-950 via-slate-900 to-sky-950 text-white shadow-md p-3 sm:p-4 flex justify-between items-center z-10 border-b border-sky-900/50">
+        <div class="flex items-center space-x-3">
+            <!-- Logo Oficial da Bella Douce -->
+            <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-sky-300 shadow-lg bg-white flex items-center justify-center flex-shrink-0">
+                <img id="app-logo-header" src="" alt="Bella Douce Doceria" class="w-full h-full object-cover">
+            </div>
+            <div>
+                <h1 class="font-bold text-lg sm:text-xl leading-tight tracking-wide text-sky-100 flex items-center gap-2">
+                    Bella Douce
+                </h1>
+                <p class="text-xs text-sky-300 font-medium">Doceria & Confeitaria Gourmet</p>
+            </div>
+        </div>
+        
+        <!-- Ação Rápida: Zerar Banco de Dados -->
+        <div class="flex items-center gap-2">
+            <button onclick="confirmarResetGeral()" class="bg-red-500/90 hover:bg-red-600 text-white text-xs px-3 py-2 rounded-xl shadow-sm flex items-center gap-1.5 transition font-semibold">
+                <i class="fa-solid fa-trash-can"></i>
+                <span class="hidden sm:inline">Zerar Dados</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal e Navegação -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Navigation Bar -->
+        <nav class="bg-slate-900 text-slate-300 w-full md:w-64 flex-shrink-0 flex md:flex-col justify-between border-t md:border-t-0 md:border-r border-slate-800 fixed bottom-0 md:relative z-20 md:z-0">
+            <div class="flex md:flex-col justify-around md:justify-start w-full p-2 md:p-4 gap-1 md:gap-2">
+                
+                <button onclick="mudarAba('pdv')" id="nav-pdv" class="nav-btn active flex flex-col md:flex-row items-center gap-1 md:gap-3 px-3 py-2 md:py-3 rounded-xl hover:bg-slate-800 text-sky-300 transition text-xs md:text-sm font-medium w-full text-left">
+                    <i class="fa-solid fa-cash-register text-lg"></i>
+                    <span>PDV / Vendas</span>
+                </button>
+
+                <button onclick="mudarAba('estoque')" id="nav-estoque" class="nav-btn flex flex-col md:flex-row items-center gap-1 md:gap-3 px-3 py-2 md:py-3 rounded-xl hover:bg-slate-800 hover:text-sky-300 transition text-xs md:text-sm font-medium w-full text-left">
+                    <i class="fa-solid fa-boxes-stacked text-lg"></i>
+                    <span>Produtos / Estoque</span>
+                </button>
+
+                <button onclick="mudarAba('clientes')" id="nav-clientes" class="nav-btn flex flex-col md:flex-row items-center gap-1 md:gap-3 px-3 py-2 md:py-3 rounded-xl hover:bg-slate-800 hover:text-sky-300 transition text-xs md:text-sm font-medium w-full text-left">
+                    <i class="fa-solid fa-users text-lg"></i>
+                    <span>Clientes / Fiado</span>
+                </button>
+
+                <button onclick="mudarAba('relatorios')" id="nav-relatorios" class="nav-btn flex flex-col md:flex-row items-center gap-1 md:gap-3 px-3 py-2 md:py-3 rounded-xl hover:bg-slate-800 hover:text-sky-300 transition text-xs md:text-sm font-medium w-full text-left">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                    <span>Relatórios / Config</span>
+                </button>
+
+            </div>
+
+            <!-- Footer Sidebar com Ícone -->
+            <div class="hidden md:flex p-4 border-t border-slate-800 items-center gap-3 text-xs text-slate-400">
+                <img id="app-logo-footer" src="" class="w-8 h-8 rounded-full border border-sky-400">
+                <div>
+                    <div class="flex items-center justify-between gap-2 font-medium text-slate-200">
+                        <span>Bella Douce</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    </div>
+                    <p class="text-[10px] text-slate-400">Pronto para uso</p>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Área Principal de Conteúdo -->
+        <main class="flex-1 overflow-y-auto custom-scroll p-4 md:p-6 mb-16 md:mb-0 bg-slate-100">
+
+            <!-- ABA 1: PDV (VENDAS) -->
+            <section id="aba-pdv" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Catálogo de Produtos -->
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-sky-100">
+                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-store text-sky-500"></i> Catálogo de Doces
+                            </h2>
+                            <div class="relative w-full sm:w-64">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+                                <input type="text" id="busca-pdv" oninput="renderizarPDV()" placeholder="Buscar doce..." class="w-full pl-9 pr-4 py-2 bg-sky-50/50 border border-sky-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-400">
+                            </div>
+                        </div>
+
+                        <!-- Grid de Produtos -->
+                        <div id="grid-pdv" class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 max-h-[calc(100vh-250px)] overflow-y-auto custom-scroll p-1">
+                            <!-- Inserido dinamicamente via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Carrinho de Compras -->
+                    <div class="bg-white rounded-2xl shadow-md border border-sky-100 flex flex-col h-[calc(100vh-180px)]">
+                        <div class="p-4 bg-slate-900 text-white rounded-t-2xl flex justify-between items-center">
+                            <h3 class="font-bold flex items-center gap-2 text-sky-100">
+                                <i class="fa-solid fa-cart-shopping text-sky-400"></i> Carrinho Atual
+                            </h3>
+                            <button onclick="limparCarrinho()" class="text-xs text-slate-400 hover:text-red-300 transition">
+                                <i class="fa-solid fa-trash"></i> Esvaziar
+                            </button>
+                        </div>
+
+                        <!-- Lista de Itens no Carrinho -->
+                        <div id="itens-carrinho" class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3">
+                            <!-- Itens inseridos via JS -->
+                        </div>
+
+                        <!-- Resumo e Finalização -->
+                        <div class="p-4 bg-sky-50 border-t border-sky-100 rounded-b-2xl space-y-3">
+                            <div class="space-y-1 text-sm text-slate-600">
+                                <div class="flex justify-between">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotal-carrinho" class="font-medium">R$ 0,00</span>
+                                </div>
+                                <div class="flex justify-between text-xs text-slate-500">
+                                    <span>Itens no pedido:</span>
+                                    <span id="qtd-carrinho">0</span>
+                                </div>
+                                <div class="flex justify-between text-base font-bold text-slate-800 pt-2 border-t border-sky-200">
+                                    <span>Total:</span>
+                                    <span id="total-carrinho" class="text-sky-700 text-lg">R$ 0,00</span>
+                                </div>
+                            </div>
+
+                            <!-- Cliente e Forma de Pagamento -->
+                            <div class="space-y-2 pt-2">
+                                <label class="text-xs font-semibold text-slate-600">Cliente / Destino:</label>
+                                <select id="select-cliente-pdv" class="w-full text-sm bg-white border border-sky-200 rounded-xl p-2 focus:ring-2 focus:ring-sky-400">
+                                    <option value="">Cliente Avulso (Balcão)</option>
+                                </select>
+
+                                <label class="text-xs font-semibold text-slate-600">Forma de Pagamento:</label>
+                                <select id="forma-pagamento" class="w-full text-sm bg-white border border-sky-200 rounded-xl p-2 focus:ring-2 focus:ring-sky-400">
+                                    <option value="Pix">Pix (Imediato)</option>
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Cartão">Cartão Débito/Crédito</option>
+                                    <option value="Fiado">Fiado / Anotar na Conta</option>
+                                </select>
+                            </div>
+
+                            <button onclick="finalizarVenda()" class="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-bold rounded-xl shadow-md transition transform active:scale-95 flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-check"></i> Concluir Venda
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ABA 2: PRODUTOS / ESTOQUE -->
+            <section id="aba-estoque" class="hidden space-y-6">
+                <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-sky-100">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Gestão de Produtos & Custos</h2>
+                        <p class="text-xs text-slate-500">Cadastre doces, edite preços e controle margens de lucro</p>
+                    </div>
+                    <button onclick="abrirModalProduto()" class="bg-slate-900 hover:bg-slate-800 text-sky-300 font-semibold text-sm px-4 py-2 rounded-xl shadow flex items-center gap-2 transition">
+                        <i class="fa-solid fa-plus"></i> Novo Produto
+                    </button>
+                </div>
+
+                <!-- Tabela de Produtos -->
+                <div class="bg-white rounded-2xl shadow-sm border border-sky-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-sky-100/60 text-slate-700 border-b border-sky-200">
+                                <tr>
+                                    <th class="p-3.5">Produto</th>
+                                    <th class="p-3.5">Categoria</th>
+                                    <th class="p-3.5">Custo (R$)</th>
+                                    <th class="p-3.5">Venda (R$)</th>
+                                    <th class="p-3.5">Margem (%)</th>
+                                    <th class="p-3.5">Estoque</th>
+                                    <th class="p-3.5 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-produtos" class="divide-y divide-sky-100">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABA 3: CLIENTES & FIADO -->
+            <section id="aba-clientes" class="hidden space-y-6">
+                <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-sky-100">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Clientes & Controle de Fiado</h2>
+                        <p class="text-xs text-slate-500">Gerencie clientes fiéis e dê baixa em débitos</p>
+                    </div>
+                    <button onclick="abrirModalCliente()" class="bg-slate-900 hover:bg-slate-800 text-sky-300 font-semibold text-sm px-4 py-2 rounded-xl shadow flex items-center gap-2 transition">
+                        <i class="fa-solid fa-user-plus"></i> Novo Cliente
+                    </button>
+                </div>
+
+                <div id="cards-clientes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Preenchido dinamicamente -->
+                </div>
+            </section>
+
+            <!-- ABA 4: RELATÓRIOS & RESET -->
+            <section id="aba-relatorios" class="hidden space-y-6">
+                
+                <!-- Cards Financeiros -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100">
+                        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Faturamento Total</div>
+                        <div id="stat-faturamento" class="text-2xl font-extrabold text-slate-800">R$ 0,00</div>
+                        <div class="text-[11px] text-emerald-600 mt-1"><i class="fa-solid fa-arrow-up"></i> Receita total</div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100">
+                        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Lucro Estimado</div>
+                        <div id="stat-lucro" class="text-2xl font-extrabold text-sky-600">R$ 0,00</div>
+                        <div class="text-[11px] text-slate-400 mt-1">Líquido (Venda - Custo)</div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100">
+                        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Vendas Realizadas</div>
+                        <div id="stat-vendas-count" class="text-2xl font-extrabold text-slate-800">0</div>
+                        <div class="text-[11px] text-slate-400 mt-1">Atendimentos concluídos</div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100">
+                        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total em Fiado</div>
+                        <div id="stat-fiado-total" class="text-2xl font-extrabold text-amber-600">R$ 0,00</div>
+                        <div class="text-[11px] text-amber-600 mt-1">A receber de clientes</div>
+                    </div>
+                </div>
+
+                <!-- Histórico de Vendas -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-history text-sky-500"></i> Histórico de Vendas
+                    </h3>
+                    <div class="overflow-x-auto max-h-64 overflow-y-auto custom-scroll">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead class="bg-slate-50 text-slate-600 sticky top-0">
+                                <tr>
+                                    <th class="p-2.5">Data/Hora</th>
+                                    <th class="p-2.5">Cliente</th>
+                                    <th class="p-2.5">Forma PGTO</th>
+                                    <th class="p-2.5">Valor Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-historico" class="divide-y divide-slate-100 text-xs">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Guia de Instalação Mobile PWA -->
+                <div class="bg-sky-50 border border-sky-200 rounded-2xl p-5 shadow-sm space-y-3">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sky-900">
+                        <i class="fa-solid fa-mobile-screen-button text-sky-600 text-lg"></i> Instalar Aplicativo no Celular
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-700">
+                        <div class="bg-white p-3.5 rounded-xl border border-sky-100">
+                            <div class="font-bold text-slate-800 mb-1 flex items-center gap-1">
+                                <i class="fa-brands fa-apple text-sm"></i> iPhone / iPad (Safari)
+                            </div>
+                            <ol class="list-decimal pl-4 space-y-1 text-slate-600">
+                                <li>Abra o link do app pelo navegador Safari.</li>
+                                <li>Toque no botão de <b>Compartilhar</b> (<i class="fa-solid fa-share-nodes"></i>).</li>
+                                <li>Selecione <b>"Adicionar à Tela de Início"</b>.</li>
+                            </ol>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-sky-100">
+                            <div class="font-bold text-slate-800 mb-1 flex items-center gap-1">
+                                <i class="fa-brands fa-android text-sm text-emerald-600"></i> Android (Chrome)
+                            </div>
+                            <ol class="list-decimal pl-4 space-y-1 text-slate-600">
+                                <li>Abra o link do app no Chrome.</li>
+                                <li>Toque nos <b>3 pontinhos (⋮)</b> no topo superior direito.</li>
+                                <li>Selecione <b>"Instalar aplicativo"</b> ou <b>"Adicionar à tela inicial"</b>.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão de Reset Completo -->
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <h3 class="text-lg font-bold text-red-700 flex items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Zerar Todo o Banco de Dados
+                            </h3>
+                            <p class="text-sm text-red-600">
+                                Remove todos os produtos, zera a lista de clientes, limpa débitos de fiado e reseta todo o faturamento acumulado para R$ 0,00.
+                            </p>
+                        </div>
+                        <button onclick="confirmarResetGeral()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-xl shadow transition whitespace-nowrap flex items-center gap-2">
+                            <i class="fa-solid fa-trash-arrow-up"></i> Limpar Tudo do Zero
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL: PRODUTO -->
+    <div id="modal-produto" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-sky-100">
+            <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                <h3 id="titulo-modal-prod" class="font-bold text-sky-200">Cadastrar Doce / Produto</h3>
+                <button onclick="fecharModalProduto()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="form-produto" onsubmit="salvarProduto(event)" class="p-5 space-y-4">
+                <input type="hidden" id="prod-id">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome do Doce/Produto</label>
+                    <input type="text" id="prod-nome" required placeholder="Ex: Bolo no Pote Ninho c/ Nutella" class="w-full bg-sky-50/50 border border-sky-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-sky-400">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Categoria</label>
+                        <select id="prod-categoria" class="w-full bg-sky-50/50 border border-sky-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-sky-400">
+                            <option value="Doces Tradicionais">Tradicionais</option>
+                            <option value="Bolos & Tortas">Bolos & Tortas</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Especiais">Especiais</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Estoque Inicial</label>
+                        <input type="number" id="prod-estoque" min="0" value="10" required class="w-full bg-sky-50/50 border border-sky-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-sky-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Custo de Produção (R$)</label>
+                        <input type="number" id="prod-custo" step="0.01" min="0" placeholder="0.00" required class="w-full bg-sky-50/50 border border-sky-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-sky-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Preço de Venda (R$)</label>
+                        <input type="number" id="prod-venda" step="0.01" min="0" placeholder="0.00" required class="w-full bg-sky-50/50 border border-sky-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-sky-400">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="fecharModalProduto()" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-800">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow transition">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CLIENTE -->
+    <div id="modal-cliente" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-sky-100">
+            <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-sky-200">Cadastrar Cliente</h3>
+                <button onclick="fecharModalCliente()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="salvarCliente(event)" class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Completo</label>
+                    <input type="text" id="cli-nome" required placeholder="Ex: Mariana Silva" class="w-full bg-sky-50/50 border border-sky-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-sky-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Telefone / WhatsApp</label>
+                    <input type="text" id="cli-telefone" placeholder="(11) 99999-9999" class="w-full bg-sky-50/50 border border-sky-200 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-sky-400">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="fecharModalCliente()" class="px-4 py-2 text-sm text-slate-500 hover:text-slate-800">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow transition">Cadastrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: RESET COMPLETO -->
+    <div id="modal-confirmar-reset" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-red-200">
+            <div class="bg-red-600 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Confirmar Limpeza Total
+                </h3>
+                <button onclick="fecharModalReset()" class="text-red-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <p class="text-sm text-slate-700">
+                    Deseja apagar **TODOS** os dados do aplicativo para iniciar do zero?
+                </p>
+                <ul class="text-xs text-red-600 space-y-1 list-disc pl-4 font-medium">
+                    <li>Todos os produtos cadastrados serão apagados.</li>
+                    <li>Todos os clientes e contas fiado serão removidas.</li>
+                    <li>O faturamento total será redefinido para R$ 0,00.</li>
+                </ul>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="fecharModalReset()" class="px-4 py-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Cancelar</button>
+                    <button type="button" onclick="executarResetGeral()" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow transition">Sim, Zerar Tudo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICAÇÕES (TOAST) -->
+    <div id="toast" class="fixed top-5 right-5 bg-slate-900 text-white text-sm px-4 py-3 rounded-xl shadow-xl hidden z-50 flex items-center gap-2 border-l-4 border-sky-400">
+        <span id="toast-msg">Mensagem</span>
+    </div>
+
+    <!-- SCRIPT DA APLICAÇÃO -->
+    <script>
+        // Imagem da Logo Oficial Bella Douce em Canvas SVG / Base64 Embutida para Carregamento Garantido
+        const LOGO_BELLA_DOUCE = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"><circle cx="250" cy="250" r="240" fill="%2387ceeb" stroke="%230f172a" stroke-width="16"/><circle cx="250" cy="250" r="220" fill="none" stroke="%230f172a" stroke-width="4"/><path d="M250 80 Q200 120 180 160 Q250 180 320 160 Q300 120 250 80 Z" fill="none" stroke="%230f172a" stroke-width="10" stroke-linecap="round"/><path d="M250 115 Q235 130 250 145 Q265 130 250 115 Z" fill="%230f172a"/><text x="250" y="260" font-family="'Brush Script MT', cursive, sans-serif" font-size="62" font-weight="bold" fill="%230f172a" text-anchor="middle">Bella Douce</text><text x="250" y="300" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="%230f172a" letter-spacing="8" text-anchor="middle">— DOCERIA —</text><circle cx="250" cy="370" r="45" fill="%233d2314" stroke="%230f172a" stroke-width="6"/><path d="M220 355 Q250 340 280 355 M215 375 Q250 360 285 375" stroke="%23d4a373" stroke-width="5" fill="none"/></svg>`;
+
+        // Configuração de Tags do iOS/Android Dinamicamente
+        function configurarMetaIcones() {
+            // Aplicar nos Elementos de Imagem
+            document.getElementById('app-logo-header').src = LOGO_BELLA_DOUCE;
+            document.getElementById('app-logo-footer').src = LOGO_BELLA_DOUCE;
+
+            // Inserir Apple Touch Icon e Favicon na Head
+            const linkApple = document.createElement('link');
+            linkApple.rel = 'apple-touch-icon';
+            linkApple.href = LOGO_BELLA_DOUCE;
+            document.head.appendChild(linkApple);
+
+            const linkIcon = document.createElement('link');
+            linkIcon.rel = 'icon';
+            linkIcon.type = 'image/svg+xml';
+            linkIcon.href = LOGO_BELLA_DOUCE;
+            document.head.appendChild(linkIcon);
+
+            // Gerar Web Manifest para Instalação Nativa PWA
+            const manifestObj = {
+                name: "Bella Douce Doceria",
+                short_name: "Bella Douce",
+                start_url: ".",
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [
+                    {
+                        src: LOGO_BELLA_DOUCE,
+                        sizes: "512x512",
+                        type: "image/svg+xml",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+
+            const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            const linkManifest = document.createElement('link');
+            linkManifest.rel = 'manifest';
+            linkManifest.href = manifestUrl;
+            document.head.appendChild(linkManifest);
+        }
+
+        // Dados Iniciais de Demonstração
+        const produtosIniciais = [
+            { id: 1, nome: "Brigadeiro Gourmet Belga", categoria: "Doces Tradicionais", custo: 1.20, venda: 3.50, estoque: 40 },
+            { id: 2, nome: "Bolo no Pote Ninho c/ Nutella", categoria: "Bolos & Tortas", custo: 4.50, venda: 12.00, estoque: 15 },
+            { id: 3, nome: "Coxinha de Morango c/ Chocolate", categoria: "Doces Tradicionais", custo: 2.50, venda: 7.00, estoque: 20 },
+            { id: 4, nome: "Torta de Limão (Fatia)", categoria: "Bolos & Tortas", custo: 3.00, venda: 9.50, estoque: 10 }
+        ];
+
+        const clientesIniciais = [
+            { id: 1, nome: "Ana Paula de Souza", telefone: "(11) 98888-1122", saldoFiado: 24.50 },
+            { id: 2, nome: "Carlos Eduardo", telefone: "(11) 97777-3344", saldoFiado: 0.00 }
+        ];
+
+        const vendasIniciais = [
+            { id: 101, data: "22/10/2026 10:15", cliente: "Ana Paula de Souza", total: 24.50, formaPgto: "Fiado", custoTotal: 8.40 }
+        ];
+
+        // Estado do App
+        let produtos = JSON.parse(localStorage.getItem('bd_produtos')) || produtosIniciais;
+        let clientes = JSON.parse(localStorage.getItem('bd_clientes')) || clientesIniciais;
+        let vendas = JSON.parse(localStorage.getItem('bd_vendas')) || vendasIniciais;
+        let carrinho = [];
+
+        window.onload = function() {
+            configurarMetaIcones();
+            salvarStorage();
+            renderizarPDV();
+            renderizarProdutos();
+            renderizarClientes();
+            renderizarRelatorios();
+            atualizarSelectClientesPDV();
+        };
+
+        function salvarStorage() {
+            localStorage.setItem('bd_produtos', JSON.stringify(produtos));
+            localStorage.setItem('bd_clientes', JSON.stringify(clientes));
+            localStorage.setItem('bd_vendas', JSON.stringify(vendas));
+        }
+
+        // Navegação de Abas
+        function mudarAba(aba) {
+            document.querySelectorAll('section[id^="aba-"]').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-sky-300');
+            });
+
+            document.getElementById(`aba-${aba}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${aba}`);
+            if(activeNav) activeNav.classList.add('bg-slate-800', 'text-sky-300');
+
+            if(aba === 'relatorios') renderizarRelatorios();
+        }
+
+        // PDV
+        function renderizarPDV() {
+            const grid = document.getElementById('grid-pdv');
+            const busca = document.getElementById('busca-pdv').value.toLowerCase();
+            grid.innerHTML = '';
+
+            const filtrados = produtos.filter(p => p.nome.toLowerCase().includes(busca));
+
+            if (filtrados.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-sm">Nenhum doce cadastrado no catálogo.</div>`;
+                return;
+            }
+
+            filtrados.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'bg-white p-3.5 rounded-2xl shadow-sm border border-sky-100 hover:border-sky-300 flex flex-col justify-between transition cursor-pointer hover:shadow-md';
+                item.onclick = () => adicionarAoCarrinho(p.id);
+
+                item.innerHTML = `
+                    <div>
+                        <span class="text-[10px] bg-sky-100 text-sky-800 font-semibold px-2 py-0.5 rounded-full">${p.categoria}</span>
+                        <h4 class="font-bold text-slate-800 text-sm mt-1.5 line-clamp-2">${p.nome}</h4>
+                    </div>
+                    <div class="mt-3 flex justify-between items-end">
+                        <div>
+                            <div class="text-[11px] text-slate-400">Estoque: ${p.estoque}</div>
+                            <div class="font-extrabold text-sky-700 text-base">R$ ${p.venda.toFixed(2)}</div>
+                        </div>
+                        <button class="bg-sky-500 hover:bg-sky-600 text-white w-8 h-8 rounded-xl flex items-center justify-center shadow">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(item);
+            });
+        }
+
+        function adicionarAoCarrinho(idProd) {
+            const prod = produtos.find(p => p.id === idProd);
+            if (!prod) return;
+
+            if (prod.estoque <= 0) {
+                mostrarToast("Produto com estoque esgotado!");
+                return;
+            }
+
+            const itemExistente = carrinho.find(item => item.produto.id === idProd);
+            if (itemExistente) {
+                if(itemExistente.qtd < prod.estoque) {
+                    itemExistente.qtd++;
+                } else {
+                    mostrarToast("Limite de estoque atingido!");
+                    return;
+                }
+            } else {
+                carrinho.push({ produto: prod, qtd: 1 });
+            }
+
+            renderizarCarrinho();
+        }
+
+        function renderizarCarrinho() {
+            const divCarrinho = document.getElementById('itens-carrinho');
+            divCarrinho.innerHTML = '';
+
+            let total = 0;
+            let qtdTotal = 0;
+
+            if (carrinho.length === 0) {
+                divCarrinho.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs">Carrinho vazio</div>';
+            } else {
+                carrinho.forEach((item, idx) => {
+                    const sub = item.produto.venda * item.qtd;
+                    total += sub;
+                    qtdTotal += item.qtd;
+
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between bg-sky-50/50 p-2.5 rounded-xl border border-sky-100';
+                    row.innerHTML = `
+                        <div class="flex-1">
+                            <div class="font-bold text-xs text-slate-800">${item.produto.nome}</div>
+                            <div class="text-[11px] text-sky-700 font-medium">R$ ${item.produto.venda.toFixed(2)} x ${item.qtd} = R$ ${sub.toFixed(2)}</div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="alterarQtdCarrinho(${idx}, -1)" class="w-6 h-6 bg-white border border-sky-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-sky-100">-</button>
+                            <span class="text-xs font-bold px-1">${item.qtd}</span>
+                            <button onclick="alterarQtdCarrinho(${idx}, 1)" class="w-6 h-6 bg-white border border-sky-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-sky-100">+</button>
+                            <button onclick="removerItemCarrinho(${idx})" class="w-6 h-6 text-red-500 hover:text-red-700 ml-1"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        </div>
+                    `;
+                    divCarrinho.appendChild(row);
+                });
+            }
+
+            document.getElementById('subtotal-carrinho').innerText = `R$ ${total.toFixed(2)}`;
+            document.getElementById('total-carrinho').innerText = `R$ ${total.toFixed(2)}`;
+            document.getElementById('qtd-carrinho').innerText = qtdTotal;
+        }
+
+        function alterarQtdCarrinho(index, delta) {
+            const item = carrinho[index];
+            if (!item) return;
+
+            const novaQtd = item.qtd + delta;
+            if (novaQtd <= 0) {
+                carrinho.splice(index, 1);
+            } else if (novaQtd <= item.produto.estoque) {
+                item.qtd = novaQtd;
+            } else {
+                mostrarToast("Estoque máximo atingido!");
+            }
+            renderizarCarrinho();
+        }
+
+        function removerItemCarrinho(index) {
+            carrinho.splice(index, 1);
+            renderizarCarrinho();
+        }
+
+        function limparCarrinho() {
+            carrinho = [];
+            renderizarCarrinho();
+        }
+
+        function finalizarVenda() {
+            if (carrinho.length === 0) {
+                mostrarToast("Selecione doces para o carrinho!");
+                return;
+            }
+
+            const clienteId = document.getElementById('select-cliente-pdv').value;
+            const formaPgto = document.getElementById('forma-pagamento').value;
+
+            let totalVenda = 0;
+            let custoTotalVenda = 0;
+
+            carrinho.forEach(item => {
+                const p = produtos.find(prod => prod.id === item.produto.id);
+                if(p) p.estoque -= item.qtd;
+                totalVenda += item.produto.venda * item.qtd;
+                custoTotalVenda += item.produto.custo * item.qtd;
+            });
+
+            let nomeCliente = "Cliente Avulso (Balcão)";
+
+            if (clienteId) {
+                const cli = clientes.find(c => c.id == clienteId);
+                if (cli) {
+                    nomeCliente = cli.nome;
+                    if (formaPgto === 'Fiado') {
+                        cli.saldoFiado += totalVenda;
+                    }
+                }
+            } else if (formaPgto === 'Fiado') {
+                mostrarToast("Selecione um cliente para venda no Fiado!");
+                return;
+            }
+
+            vendas.push({
+                id: Date.now(),
+                data: new Date().toLocaleString('pt-BR'),
+                cliente: nomeCliente,
+                total: totalVenda,
+                formaPgto: formaPgto,
+                custoTotal: custoTotalVenda
+            });
+
+            salvarStorage();
+            limparCarrinho();
+            renderizarPDV();
+            renderizarProdutos();
+            renderizarClientes();
+            mostrarToast("Venda registrada com sucesso!");
+        }
+
+        // Tabela de Produtos
+        function renderizarProdutos() {
+            const tbody = document.getElementById('tabela-produtos');
+            tbody.innerHTML = '';
+
+            if (produtos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">Nenhum produto cadastrado.</td></tr>`;
+                return;
+            }
+
+            produtos.forEach(p => {
+                const lucro = p.venda - p.custo;
+                const margem = p.venda > 0 ? ((lucro / p.venda) * 100).toFixed(1) : 0;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-sky-50/50 transition";
+                tr.innerHTML = `
+                    <td class="p-3.5 font-bold text-slate-800">${p.nome}</td>
+                    <td class="p-3.5"><span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded-full font-medium">${p.categoria}</span></td>
+                    <td class="p-3.5 text-slate-600">R$ ${p.custo.toFixed(2)}</td>
+                    <td class="p-3.5 font-semibold text-slate-800">R$ ${p.venda.toFixed(2)}</td>
+                    <td class="p-3.5 font-bold text-emerald-600">${margem}%</td>
+                    <td class="p-3.5">${p.estoque} u.</td>
+                    <td class="p-3.5 text-center">
+                        <button onclick="deletarProduto(${p.id})" class="text-red-500 hover:text-red-700 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function abrirModalProduto() {
+            document.getElementById('form-produto').reset();
+            document.getElementById('prod-id').value = '';
+            document.getElementById('modal-produto').classList.remove('hidden');
+        }
+
+        function fecharModalProduto() {
+            document.getElementById('modal-produto').classList.add('hidden');
+        }
+
+        function salvarProduto(e) {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const nome = document.getElementById('prod-nome').value;
+            const categoria = document.getElementById('prod-categoria').value;
+            const estoque = parseInt(document.getElementById('prod-estoque').value);
+            const custo = parseFloat(document.getElementById('prod-custo').value);
+            const venda = parseFloat(document.getElementById('prod-venda').value);
+
+            if (id) {
+                const prod = produtos.find(p => p.id == id);
+                if(prod) Object.assign(prod, { nome, categoria, estoque, custo, venda });
+            } else {
+                produtos.push({ id: Date.now(), nome, categoria, estoque, custo, venda });
+            }
+
+            salvarStorage();
+            fecharModalProduto();
+            renderizarProdutos();
+            renderizarPDV();
+            mostrarToast("Produto salvo com sucesso!");
+        }
+
+        function deletarProduto(id) {
+            produtos = produtos.filter(p => p.id !== id);
+            salvarStorage();
+            renderizarProdutos();
+            renderizarPDV();
+            mostrarToast("Produto removido.");
+        }
+
+        // Clientes e Fiado
+        function renderizarClientes() {
+            const container = document.getElementById('cards-clientes');
+            container.innerHTML = '';
+
+            if (clientes.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-sm">Nenhum cliente cadastrado.</div>`;
+                return;
+            }
+
+            clientes.forEach(c => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-2xl shadow-sm border border-sky-100 space-y-3";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-slate-800">${c.nome}</h4>
+                            <p class="text-xs text-slate-500">${c.telefone || 'Sem telefone'}</p>
+                        </div>
+                        <button onclick="deletarCliente(${c.id})" class="text-slate-300 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-100 p-3 rounded-xl flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] text-amber-700 font-semibold uppercase block">Débito Fiado</span>
+                            <span class="text-base font-extrabold text-amber-800">R$ ${c.saldoFiado.toFixed(2)}</span>
+                        </div>
+                        ${c.saldoFiado > 0 ? `<button onclick="quitarFiado(${c.id})" class="bg-amber-500 hover:bg-amber-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow">Quitar</button>` : '<span class="text-xs text-emerald-600 font-semibold">Em dia</span>'}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            atualizarSelectClientesPDV();
+        }
+
+        function atualizarSelectClientesPDV() {
+            const select = document.getElementById('select-cliente-pdv');
+            select.innerHTML = '<option value="">Cliente Avulso (Balcão)</option>';
+            clientes.forEach(c => {
+                select.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+            });
+        }
+
+        function abrirModalCliente() {
+            document.getElementById('modal-cliente').classList.remove('hidden');
+        }
+
+        function fecharModalCliente() {
+            document.getElementById('modal-cliente').classList.add('hidden');
+        }
+
+        function salvarCliente(e) {
+            e.preventDefault();
+            const nome = document.getElementById('cli-nome').value;
+            const telefone = document.getElementById('cli-telefone').value;
+
+            clientes.push({ id: Date.now(), nome, telefone, saldoFiado: 0.00 });
+            salvarStorage();
+            fecharModalCliente();
+            renderizarClientes();
+            mostrarToast("Cliente cadastrado com sucesso!");
+        }
+
+        function deletarCliente(id) {
+            clientes = clientes.filter(c => c.id !== id);
+            salvarStorage();
+            renderizarClientes();
+            mostrarToast("Cliente removido.");
+        }
+
+        function quitarFiado(id) {
+            const cli = clientes.find(c => c.id === id);
+            if (cli) {
+                cli.saldoFiado = 0;
+                salvarStorage();
+                renderizarClientes();
+                mostrarToast("Fiado quitado com sucesso!");
+            }
+        }
+
+        // Relatórios
+        function renderizarRelatorios() {
+            let faturamento = 0;
+            let custoTotal = 0;
+            let totalFiado = clientes.reduce((acc, c) => acc + (c.saldoFiado || 0), 0);
+
+            vendas.forEach(v => {
+                faturamento += v.total;
+                custoTotal += (v.custoTotal || 0);
+            });
+
+            const lucro = faturamento - custoTotal;
+
+            document.getElementById('stat-faturamento').innerText = `R$ ${faturamento.toFixed(2)}`;
+            document.getElementById('stat-lucro').innerText = `R$ ${lucro.toFixed(2)}`;
+            document.getElementById('stat-vendas-count').innerText = vendas.length;
+            document.getElementById('stat-fiado-total').innerText = `R$ ${totalFiado.toFixed(2)}`;
+
+            const tbody = document.getElementById('tabela-historico');
+            tbody.innerHTML = '';
+
+            if (vendas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Nenhuma venda registrada.</td></tr>`;
+                return;
+            }
+
+            vendas.slice().reverse().forEach(v => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-2.5 text-slate-500">${v.data}</td>
+                    <td class="p-2.5 font-medium text-slate-800">${v.cliente}</td>
+                    <td class="p-2.5"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px]">${v.formaPgto}</span></td>
+                    <td class="p-2.5 font-bold text-sky-700">R$ ${v.total.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Função de Reset
+        function confirmarResetGeral() {
+            document.getElementById('modal-confirmar-reset').classList.remove('hidden');
+        }
+
+        function fecharModalReset() {
+            document.getElementById('modal-confirmar-reset').classList.add('hidden');
+        }
+
+        function executarResetGeral() {
+            produtos = [];
+            clientes = [];
+            vendas = [];
+            carrinho = [];
+
+            salvarStorage();
+            renderizarPDV();
+            renderizarProdutos();
+            renderizarClientes();
+            renderizarRelatorios();
+            renderizarCarrinho();
+
+            fecharModalReset();
+            mostrarToast("Banco de dados totalmente zerado! Pronto para uso do zero.");
+        }
+
+        function mostrarToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
